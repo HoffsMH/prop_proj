@@ -1,4 +1,4 @@
-property_appreciation = 1.034
+property_appreciation = 1.032
 home_cost = 290_000
 investment_cost = 298_693
 starting_taxes = 7840
@@ -50,3 +50,10 @@ log_report =
 
 IO.inspect([log_header] ++ log_report)
 IO.inspect([main_header] ++ [main_line])
+
+report = [main_header] ++ [main_line] ++ [""] ++ [log_header] ++ log_report
+  |> Enum.join("\n")
+
+{:ok, file} = File.open("report.csv", [:write])
+IO.binwrite(file, report)
+File.close(file)
