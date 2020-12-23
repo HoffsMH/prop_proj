@@ -73,6 +73,27 @@ defmodule PropProj do
     |> new_balance()
   end
 
+  def new_rent_advantage(
+        args = %{
+          appreciation: appreciation,
+          expected_rent: expected_rent,
+          balance: balance,
+          current_year: current_year,
+          rent_advantage: _
+        }
+      ) do
+    new_expected_rent = expected_rent * appreciation
+    IO.puts "new expected rent: #{new_expected_rent}"
+    rent_advantage = new_expected_rent + (balance / current_year / 12.0)
+    %{args | rent_advantage: rent_advantage, expected_rent: new_expected_rent}
+  end
+
+  def new_rent_advantage(args) do
+    args
+    |> Map.put(:rent_advantage, 0)
+    |> new_rent_advantage()
+  end
+
   def call(args) do
     args
     |> new_year()
@@ -82,6 +103,7 @@ defmodule PropProj do
     |> new_insurance()
     |> new_broker_fees()
     |> new_balance()
+    # |> new_rent_advantage()
     |> new_log()
     |> call()
   end

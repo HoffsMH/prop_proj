@@ -1,20 +1,38 @@
+property_appreciation = 1.034
+home_cost = 290_000
+investment_cost = 298_693
+starting_taxes = 7840
+tax_percent_inc = 1.03
+loan_principle = 230400
+payment = 925.40
+interest_rate = 0.0263
+starting_insurance = 1000
+
 result = PropProj.call(%{
       years: 10,
-      appreciation: 1.034,
-      home_cost: 290_000,
-      investment_cost: 298_693,
-      taxes: 7840,
-      tax_percent_inc: 1.03,
-      interest_rate: 0.0263,
-      payment: 925.40,
-      principle: 230400,
-      number_of_payments: 360,
-      insurance: 1000
+      appreciation: property_appreciation,
+      home_cost: home_cost,
+      investment_cost: investment_cost,
+      taxes: starting_taxes,
+      tax_percent_inc: tax_percent_inc,
+      interest_rate: interest_rate,
+      payment: payment,
+      principle: loan_principle,
+      insurance: starting_insurance,
+      expected_rent: 1500
     })
 
 import Reporting
 
-log_header =  "year, sell_price, balance, balance_per_year, balance_per_year_per_month, taxes, taxes_payed, interest, interest_payed, insurance, insurance_payed, broker_fees_if_sold, tax_break_if_sold"
+main_header = "home cost, investment_cost, starting_loan_principle, loan_payment, loan_interest_rate, property_appreciation, starting_taxes, tax_percent_increase_per_year, starting_insurance_premium"
+
+main_line = "#{fm(home_cost)}, #{fm(investment_cost)}, " <>
+            "#{fm(loan_principle)}, #{fm(payment)}, #{interest_rate}, " <>
+            "#{property_appreciation}, #{fm(starting_taxes)}, " <>
+            "#{tax_percent_inc}, #{fm(starting_insurance)}, "
+
+
+log_header = "year, sell_price, balance, balance_per_year, balance_per_year_per_month, taxes, taxes_payed, interest, interest_payed, insurance, insurance_payed, broker_fees_if_sold, tax_break_if_sold"
 
 log_report =
   result.logs
@@ -31,3 +49,4 @@ log_report =
   end)
 
 IO.inspect([log_header] ++ log_report)
+IO.inspect([main_header] ++ [main_line])
