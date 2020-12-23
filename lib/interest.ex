@@ -51,11 +51,15 @@ defmodule Interest do
     %{
       args
       | principle: new_principle,
-        interest_collected: this_years_interest_collected + interest_collected
+        interest_collected: this_years_interest_collected + interest_collected,
+        interest: this_years_interest_collected
     }
   end
 
   def call(args) do
-    call(Map.put(args, :interest_collected, 0))
+    args
+    |> Map.put(:interest_collected, 0)
+    |> Map.put(:interest, 0)
+    |> call()
   end
 end

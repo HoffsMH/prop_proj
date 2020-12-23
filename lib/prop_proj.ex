@@ -42,13 +42,46 @@ defmodule PropProj do
     |> new_insurance()
   end
 
+  def new_broker_fees(args = %{broker_fees: _, sell_price: sell_price}) do
+    %{args | broker_fees: sell_price * 0.06}
+  end
+
+  def new_broker_fees(args) do
+    Map.put(args, :broker_fees, 0)
+    |> new_broker_fees()
+  end
+
+  def new_balance(
+        args = %{
+          sell_price: sp,
+          investment_cost: ic,
+          broker_fees: bf,
+          total_taxes_collected: tc,
+          interest_collected: icl,
+          insurance_collected: inscl,
+          tax_break: tb,
+          balance: _
+        }
+      ) do
+    new_balance = sp - (ic + bf + tc + icl + inscl) + tb
+    %{args | balance: new_balance}
+  end
+
+  def new_balance(args) do
+    args
+    |> Map.put(:balance, 0)
+    |> new_balance()
+  end
+
   def call(args) do
     args
     |> new_year()
     |> new_sell_price()
-    |> Taxes.call()
     |> Interest.call()
+    |> Taxes.call()
     |> new_insurance()
+    |> new_broker_fees()
+    |> new_balance()
     |> new_log()
     |> call()
   end

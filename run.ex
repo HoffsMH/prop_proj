@@ -1,5 +1,5 @@
 result = PropProj.call(%{
-      years: 6,
+      years: 10,
       appreciation: 1.034,
       home_cost: 290_000,
       investment_cost: 298_693,
@@ -12,19 +12,22 @@ result = PropProj.call(%{
       insurance: 1000
     })
 
-tax_break = result.interest_collected * 0.25
+import Reporting
 
-IO.puts("x = #{x}")
+log_header =  "year, sell_price, balance, balance_per_year, balance_per_year_per_month, taxes, taxes_payed, interest, interest_payed, insurance, insurance_payed, broker_fees_if_sold, tax_break_if_sold"
 
-balance = result.sell_price * 0.94 - (result.investment_cost + result.total_taxes_collected + result.interest_collected + result.insurance_collected) + tax_break
+log_report =
+  result.logs
+  |> Enum.reduce([], fn year, lines ->
+    line = "#{year.current_year}, #{fm(year.sell_price)}, " <>
+           "#{fm(year.balance)}, #{fm(year.balance / year.current_year)}, " <>
+           "#{fm(year.balance / year.current_year / 12.0)}, " <>
+           "#{fm(year.taxes)}, #{fm(year.total_taxes_collected)}, " <>
+           "#{fm(year.interest)}, #{fm(year.interest_collected)}, " <>
+           "#{fm(year.insurance)}, #{fm(year.insurance_collected)}, " <>
+           "#{fm(year.sell_price * 0.06)}, #{fm(year.tax_break)}"
 
-IO.puts("balance: #{balance}")
-IO.puts("over 6 years #{balance/6.0}")
-IO.puts("per month #{balance/6.0/12.0}")
-IO.puts("insurance collected: #{result.insurance_collected}")
+    lines ++ [line]
+  end)
 
-#balance is sell_price - (investment_cost + broker_fees + taxes_payed + interest_payed + insurance_payed) + tax_break
-
-# property_appreciation_per_year, loan_interest_rate, tax_increase_per_year, investment_cost, final_balance_if_sold_on_final_year,
-
-# year sell_price, taxes, taxes_payed, interest, interest_payed, insurance, insurance_payed, broker_fees_if_sold, tax_break_if_sold
+IO.inspect([log_header] ++ log_report)
